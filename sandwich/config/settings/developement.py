@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # 3rd party
     "rest_framework",  # djangorestframework
+    "django_filters",  # django_filters
     # sandwich app
     "api",
 ]
@@ -153,4 +154,6 @@ REST_FRAMEWORK = {
         # 'rest_framework.permissions.IsAdminUser',
         'rest_framework.permissions.AllowAny',
     ],
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 10,
 }

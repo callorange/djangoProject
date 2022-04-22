@@ -27,7 +27,8 @@ django 소스코드 폴더입니다.
 1. python 3.9.5
 2. Django 3.2.13
 3. djangorestframework 3.13.1
-4. black 22.3.0
+4. django-filter 21.1
+5. black 22.3.0
 
 ### settings.py 분리
 차후 동작환경에 따라 설정이 달라지므로 settings.py를 패키지화 하여 분리되었습니다.\

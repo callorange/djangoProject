@@ -74,10 +74,10 @@ class Sandwich(models.Model):
         help_text="가격. 0원 이상",
     )
 
-    bread = models.ManyToManyField(Bread, verbose_name="재료")
-    topping = models.ManyToManyField(Topping, verbose_name="재료")
-    cheese = models.ManyToManyField(Cheese, verbose_name="재료")
-    sauce = models.ManyToManyField(Sauce, verbose_name="재료")
+    bread = models.ManyToManyField(Bread, verbose_name="빵")
+    topping = models.ManyToManyField(Topping, verbose_name="토핑")
+    cheese = models.ManyToManyField(Cheese, verbose_name="치즈")
+    sauce = models.ManyToManyField(Sauce, verbose_name="소스")
 
     created_at = models.DateTimeField("등록일", auto_now_add=True, help_text="등록일")
     updated_at = models.DateTimeField("수정일", auto_now=True, help_text="수정일")
