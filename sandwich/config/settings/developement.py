@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     # 3rd party
     "rest_framework",  # djangorestframework
     # sandwich app
+    "api",
 ]
 
 MIDDLEWARE = [
