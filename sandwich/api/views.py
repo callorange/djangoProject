@@ -7,13 +7,15 @@ __all__ = [
 ]
 
 from django.db import transaction
-from django.db.models import F, Count, Sum, Subquery
+from django.db.models import F, Count
 from rest_framework import viewsets, serializers
 
 from django_filters import rest_framework as dj_filters
 
-from api.models import *
-from api.serializers import *
+from api.models.ingredient import *
+from api.models.sandwich import *
+from api.serializers.ingredient import *
+from api.serializers.sandwich import *
 
 
 class BreadViewSet(viewsets.ModelViewSet):

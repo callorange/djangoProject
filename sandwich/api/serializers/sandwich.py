@@ -1,63 +1,18 @@
+"""
+샌드위치 관련 시리얼라이저 모듈
+"""
+
 __all__ = [
-    "BreadSerializer",
-    "ToppingSerializer",
-    "CheeseSerializer",
-    "SauceSerializer",
     "SandwichInfoSerializer",
     "SandwichSerializer",
 ]
 
 from decimal import Decimal
 
-from django.db import transaction
-from django.db.models import F
 from rest_framework import serializers
 
-from api.models import *
-
-
-class IngredientSerializer(serializers.ModelSerializer):
-    """
-    샌드위치 재료 시리얼라이저
-    상속을 통해 세부 사항 구현
-    """
-
-    class Meta:
-        abstract = True
-        fields = "__all__"
-        read_only_fields = [
-            "id",
-            "created_at",
-            "updated_at",
-        ]
-
-
-class BreadSerializer(IngredientSerializer):
-    """빵 시리얼라이저"""
-
-    class Meta(IngredientSerializer.Meta):
-        model = Bread
-
-
-class ToppingSerializer(IngredientSerializer):
-    """토핑 시리얼라이저"""
-
-    class Meta(IngredientSerializer.Meta):
-        model = Topping
-
-
-class CheeseSerializer(IngredientSerializer):
-    """치즈 시리얼라이저"""
-
-    class Meta(IngredientSerializer.Meta):
-        model = Cheese
-
-
-class SauceSerializer(IngredientSerializer):
-    """소스 시리얼라이저"""
-
-    class Meta(IngredientSerializer.Meta):
-        model = Sauce
+from api.models.sandwich import *
+from api.serializers.ingredient import *
 
 
 class SandwichInfoSerializer(serializers.ModelSerializer):
@@ -91,7 +46,9 @@ class SandwichSerializer(serializers.ModelSerializer):
         ]
 
     def count_check(self, obj: list, min: int = 1, max: int = 1, name: str = ""):
-        """갯수 체크 함수
+        """입력제한 갯수 체크
+
+        validate 항목 중 최소 최대 제한 갯수 체크는 코드가 비슷해서 따로 만듦
 
         Parameters
         ----------
@@ -159,7 +116,11 @@ class SandwichSerializer(serializers.ModelSerializer):
         return value
 
     def validate(self, data):
-        """오브젝트 레벨 체크"""
+        """오브젝트 레벨 체크
+
+        체크항목
+        1. 샌드위치 가격 >= 재료가격합계
+        """
 
         # 가격이 재료가격 합계보다 작으면 픽스한다
         price = sum(o.price for o in data["bread"])
