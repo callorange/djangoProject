@@ -24,13 +24,15 @@ class BreadViewSet(viewsets.ModelViewSet):
 
     @transaction.atomic()
     def perform_update(self, serializer):
-        bread = Bread.objects.get(id=self.kwargs['pk'])
+        bread = Bread.objects.get(id=self.kwargs["pk"])
         change_price = serializer.validated_data["price"] - bread.price  # 가격변동 체크
 
         instance = serializer.save()
 
         if change_price != 0:
-            Sandwich.objects.filter(bread__in=[instance.id]).update(price=F("price") + change_price)
+            Sandwich.objects.filter(bread__in=[instance.id]).update(
+                price=F("price") + change_price
+            )
 
     @transaction.atomic()
     def perform_destroy(self, instance):
@@ -58,13 +60,15 @@ class ToppingViewSet(viewsets.ModelViewSet):
 
     @transaction.atomic()
     def perform_update(self, serializer):
-        topping = Topping.objects.get(id=self.kwargs['pk'])
+        topping = Topping.objects.get(id=self.kwargs["pk"])
         change_price = serializer.validated_data["price"] - topping.price  # 가격변동 체크
 
         instance = serializer.save()
 
         if change_price != 0:
-            Sandwich.objects.filter(topping__in=[instance.id]).update(price=F("price") + change_price)
+            Sandwich.objects.filter(topping__in=[instance.id]).update(
+                price=F("price") + change_price
+            )
 
     @transaction.atomic()
     def perform_destroy(self, instance):
@@ -102,13 +106,15 @@ class CheeseViewSet(viewsets.ModelViewSet):
 
     @transaction.atomic()
     def perform_update(self, serializer):
-        cheese = Cheese.objects.get(id=self.kwargs['pk'])
+        cheese = Cheese.objects.get(id=self.kwargs["pk"])
         change_price = serializer.validated_data["price"] - cheese.price  # 가격변동 체크
 
         instance = serializer.save()
 
         if change_price != 0:
-            Sandwich.objects.filter(cheese__in=[instance.id]).update(price=F("price") + change_price)
+            Sandwich.objects.filter(cheese__in=[instance.id]).update(
+                price=F("price") + change_price
+            )
 
     @transaction.atomic()
     def perform_destroy(self, instance):
@@ -136,13 +142,15 @@ class SauceViewSet(viewsets.ModelViewSet):
 
     @transaction.atomic()
     def perform_update(self, serializer):
-        sauce = Sauce.objects.get(id=self.kwargs['pk'])
+        sauce = Sauce.objects.get(id=self.kwargs["pk"])
         change_price = serializer.validated_data["price"] - sauce.price  # 가격변동 체크
 
         instance = serializer.save()
 
         if change_price != 0:
-            Sandwich.objects.filter(sauce__in=[instance.id]).update(price=F("price") + change_price)
+            Sandwich.objects.filter(sauce__in=[instance.id]).update(
+                price=F("price") + change_price
+            )
 
     @transaction.atomic()
     def perform_destroy(self, instance):
