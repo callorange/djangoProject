@@ -1,50 +1,53 @@
-__all__ = ["BreadViewSet", "ToppingViewSet", "CheeseViewSet", "SauceViewSet"]
+__all__ = [
+    "BreadViewSet",
+    "ToppingViewSet",
+    "CheeseViewSet",
+    "SauceViewSet",
+    "SandwichViewSet",
+]
 
 from rest_framework import viewsets
 
-from api.models import Ingredient, IngredientType
-from api.serializers import IngredientSerializer
+from api.models import *
+from api.serializers import *
 
 
-class IngredientViewSet(viewsets.ModelViewSet):
-    """
-    재료 API 관련 부모클래스
-    ingredient_type에 재료타입을 지정하면 관련 쿼리셋 리턴 및 저장시 해당 타입 추가 지정
-    """
-
-    queryset = Ingredient.objects.all()
-    serializer_class = IngredientSerializer
-
-    ingredient_type = None  # 실제 저장될 재료 타입.
-
-    def get_queryset(self):
-        if self.ingredient_type:
-            return self.queryset.filter(category=self.ingredient_type)
-        return self.queryset
-
-    def perform_create(self, serializer):
-        serializer.save(category=self.ingredient_type)
-
-
-class BreadViewSet(IngredientViewSet):
+class BreadViewSet(viewsets.ModelViewSet):
     """빵 API 뷰셋"""
+    queryset = Bread.objects.all()
+    serializer_class = BreadSerializer
 
-    ingredient_type = IngredientType.BREAD
 
-
-class ToppingViewSet(IngredientViewSet):
+class ToppingViewSet(viewsets.ModelViewSet):
     """토핑 API 뷰셋"""
 
-    ingredient_type = IngredientType.TOPPING
+    queryset = Topping.objects.all()
+    serializer_class = ToppingSerializer
 
 
-class CheeseViewSet(IngredientViewSet):
+class CheeseViewSet(viewsets.ModelViewSet):
     """치즈 API 뷰셋"""
 
-    ingredient_type = IngredientType.CHEESE
+    queryset = Cheese.objects.all()
+    serializer_class = CheeseSerializer
 
 
-class SauceViewSet(IngredientViewSet):
+class SauceViewSet(viewsets.ModelViewSet):
     """소스 API 뷰셋"""
 
-    ingredient_type = IngredientType.SAUCE
+    queryset = Sauce.objects.all()
+    serializer_class = SauceSerializer
+
+
+class SandwichViewSet(viewsets.ModelViewSet):
+    """샌드위치 API 관련 뷰셋"""
+
+    queryset = Sandwich.objects.all()
+    serializer_class = SandwichInfoSerializer
+
+    def get_serializer_class(self):
+        """request.method 에 따라서 다른 serializer를 반환한다"""
+        if self.request.method == "POST":
+            return SandwichSerializer
+        return self.serializer_class
+
