@@ -21,3 +21,5 @@ urlpatterns = [
     # api
     path("api/", include("api.urls")),
 ]
+
+handler404 = 'api.views.error_404'

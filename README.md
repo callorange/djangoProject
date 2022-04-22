@@ -40,9 +40,10 @@ django 소스코드 폴더입니다.
 sandwich> pip install -r requiements.txt
 ```
 
-### 슈퍼유저 등록
+### 실행전(pass)
 ```shell
 sandwich> python manage.py createsuperuser
+sandwich> python manage.py collectstatic
 ...
 ```
 
@@ -52,3 +53,11 @@ sandwich> python manage.py runserver
 # 혹은
 sandwich> python manage.py runserver --settings=config.settings.developement
 ```
+
+### API URL
+1. localhost:8000/api/
+2. localhost:8000/api/bread/
+3. localhost:8000/api/topping/
+4. localhost:8000/api/cheese/
+5. localhost:8000/api/sauce/
+6. localhost:8000/api/sandwich/
