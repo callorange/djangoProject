@@ -10,6 +10,7 @@ __all__ = [
 from decimal import Decimal
 
 from django.db import transaction
+from django.db.models import F
 from rest_framework import serializers
 
 from api.models import *
@@ -130,39 +131,38 @@ class SandwichSerializer(serializers.ModelSerializer):
         for target in value:
             if target.stock == 0:
                 raise serializers.ValidationError("재고가 없는 토핑을 선택하셨습니다.")
-            
+
         return value
 
     def validate_cheese(self, value):
         """치즈: 1개"""
         # 수량체크
         self.count_check(value, max=1, name="치즈")
-        
+
         # DB 체크 및 재고 체크
         for target in value:
             if target.stock == 0:
                 raise serializers.ValidationError("재고가 없는 치즈를 선택하셨습니다.")
-            
+
         return value
 
     def validate_sauce(self, value):
         """소스: 1~2개"""
         # 수량체크
         self.count_check(value, max=2, name="소스")
-        
+
         # DB 체크 및 재고 체크
         for target in value:
             if target.stock == 0:
                 raise serializers.ValidationError("재고가 없는 소스를 선택하셨습니다.")
-            
+
         return value
 
     def validate(self, data):
         """샌드위치 가격 업데이트"""
-        price = sum(o.price for o in data['bread'])
-        price += sum(o.price for o in data['topping'])
-        price += sum(o.price for o in data['cheese'])
-        price += sum(o.price for o in data['sauce'])
+        price = sum(o.price for o in data["bread"])
+        price += sum(o.price for o in data["topping"])
+        price += sum(o.price for o in data["cheese"])
+        price += sum(o.price for o in data["sauce"])
         data["price"] = Decimal(str(price))
         return data
-

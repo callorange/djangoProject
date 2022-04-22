@@ -7,6 +7,7 @@ __all__ = [
 ]
 
 from django.db import transaction
+from django.db.models import F
 from rest_framework import viewsets
 
 from api.models import *
@@ -15,6 +16,7 @@ from api.serializers import *
 
 class BreadViewSet(viewsets.ModelViewSet):
     """빵 API 뷰셋"""
+
     queryset = Bread.objects.all()
     serializer_class = BreadSerializer
 
@@ -51,3 +53,19 @@ class SandwichViewSet(viewsets.ModelViewSet):
         if self.request.method == "POST":
             return SandwichSerializer
         return self.serializer_class
+
+    @transaction.atomic()
+    def perform_create(self, serializer):
+        instance = serializer.save()
+        instance.bread.update(stock=F("stock") - 1)
+        instance.topping.update(stock=F("stock") - 1)
+        instance.cheese.update(stock=F("stock") - 1)
+        instance.sauce.update(stock=F("stock") - 1)
+
+    @transaction.atomic()
+    def perform_destroy(self, instance):
+        instance.bread.update(stock=F("stock") + 1)
+        instance.topping.update(stock=F("stock") + 1)
+        instance.cheese.update(stock=F("stock") + 1)
+        instance.sauce.update(stock=F("stock") + 1)
+        instance.delete()
