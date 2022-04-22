@@ -31,7 +31,7 @@ with open(DEVELOPEMENT_CONFIG_JSON) as f:
 SECRET_KEY = CONFIG_OBJ["SECRET_KEY"]
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
 

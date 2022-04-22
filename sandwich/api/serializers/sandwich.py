@@ -127,7 +127,7 @@ class SandwichSerializer(serializers.ModelSerializer):
         price += sum(o.price for o in data["topping"])
         price += sum(o.price for o in data["cheese"])
         price += sum(o.price for o in data["sauce"])
-        if data["price"] < price:
+        if data.get("price", 0) < price:
             data["price"] = Decimal(str(price))
 
         return data
