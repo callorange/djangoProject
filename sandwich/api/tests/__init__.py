@@ -1,2 +1,2 @@
-from .IngredientTest import *
+from .modelTest import *
 
