@@ -13,6 +13,7 @@ SECRET_KEY를 분리용으로 별도 json파일을 로드합니다.\
 **실제 production 한경에서는 별도로 분리되어야 합니다.**
 ```text
 # .gitignore 에서 해당 폴더내 production이 들어가는 파일 무시하도록 설정
+# 다른 세팅을 사용할 경우 추가 필요
 .secrets/**/*production*
 ```
 
@@ -26,6 +27,7 @@ django 소스코드 폴더입니다.
 1. python 3.9.5
 2. Django 3.2.13
 3. djangorestframework 3.13.1
+4. black 22.3.0
 
 ### settings.py 분리
 차후 동작환경에 따라 설정이 달라지므로 settings.py를 패키지화 하여 분리되었습니다.\
