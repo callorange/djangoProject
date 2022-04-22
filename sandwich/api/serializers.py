@@ -159,10 +159,14 @@ class SandwichSerializer(serializers.ModelSerializer):
         return value
 
     def validate(self, data):
-        """샌드위치 가격 업데이트"""
+        """오브젝트 레벨 체크"""
+
+        # 가격이 재료가격 합계보다 작으면 픽스한다
         price = sum(o.price for o in data["bread"])
         price += sum(o.price for o in data["topping"])
         price += sum(o.price for o in data["cheese"])
         price += sum(o.price for o in data["sauce"])
-        data["price"] = Decimal(str(price))
+        if data["price"] < price:
+            data["price"] = Decimal(str(price))
+
         return data

@@ -7,8 +7,8 @@ __all__ = [
 ]
 
 from django.db import transaction
-from django.db.models import F
-from rest_framework import viewsets
+from django.db.models import F, Count, Sum, Subquery
+from rest_framework import viewsets, serializers
 
 from django_filters import rest_framework as dj_filters
 
@@ -22,12 +22,60 @@ class BreadViewSet(viewsets.ModelViewSet):
     queryset = Bread.objects.all()
     serializer_class = BreadSerializer
 
+    @transaction.atomic()
+    def perform_update(self, serializer):
+        serializer.save()
+
+    @transaction.atomic()
+    def perform_destroy(self, instance):
+        # 빵이 쓰이고 있는 샌드위치 갯수
+        use_sandwich = Sandwich.objects.filter(bread__in=[instance.id])
+
+        if use_sandwich.count() > 0:
+            sandwich_id = ", ".join([str(obj.id) for obj in use_sandwich])  # 샌드위치 ID
+            raise serializers.ValidationError(
+                f"샌드위치에 사용중인 빵은 삭제할 수 없습니다. 샌드위치 ID: {sandwich_id}"
+            )
+
+        # 샌드위치 가격 업데이트
+        use_sandwich.update(price=F("price") - instance.price)
+
+        # 삭제
+        instance.delete()
+
 
 class ToppingViewSet(viewsets.ModelViewSet):
     """토핑 API 뷰셋"""
 
     queryset = Topping.objects.all()
     serializer_class = ToppingSerializer
+
+    @transaction.atomic()
+    def perform_destroy(self, instance):
+        # 현재 지우려는 토핑을 사용중인 샌드위치 별로 사용중인 토핑 갯수를 구한다.
+        # [{id: 1, t_count: 2}...]
+        use_sandwich = Sandwich.objects.filter(topping__in=[instance.id])
+        use_annotate = (
+            Sandwich.objects.filter(id__in=use_sandwich)  # 이렇게 해야 annotate가 제대로 된다 ㅎ
+            .values("id")
+            .annotate(t_count=Count("topping"))
+        )
+
+        # 토핑이 1개뿐인 샌드위치 갯수
+        use_count = use_annotate.filter(t_count__lte=1)
+
+        if use_count.count() > 0:
+            # 샌드위치 ID. annotate로 가져왔으므로 dict다
+            sandwich_id = ", ".join([str(obj["id"]) for obj in use_annotate])
+            raise serializers.ValidationError(
+                f"샌드위치에 하나뿐인 토핑은 삭제할 수 없습니다. 샌드위치 ID: {sandwich_id}"
+            )
+
+        # 샌드위치 가격 업데이트
+        use_sandwich.update(price=F("price") - instance.price)
+
+        # 삭제
+        instance.delete()
 
 
 class CheeseViewSet(viewsets.ModelViewSet):
@@ -36,12 +84,56 @@ class CheeseViewSet(viewsets.ModelViewSet):
     queryset = Cheese.objects.all()
     serializer_class = CheeseSerializer
 
+    @transaction.atomic()
+    def perform_destroy(self, instance):
+        # 치즈가 쓰이고 있는 샌드위치 갯수
+        use_sandwich = Sandwich.objects.filter(cheese__in=[instance.id])
+
+        if use_sandwich.count() > 0:
+            sandwich_id = ", ".join([str(obj.id) for obj in use_sandwich])  # 샌드위치 ID
+            raise serializers.ValidationError(
+                f"샌드위치에 사용중인 치즈는 삭제할 수 없습니다. 샌드위치 ID: {sandwich_id}"
+            )
+
+        # 샌드위치 가격 업데이트
+        use_sandwich.update(price=F("price") - instance.price)
+
+        # 삭제
+        instance.delete()
+
 
 class SauceViewSet(viewsets.ModelViewSet):
     """소스 API 뷰셋"""
 
     queryset = Sauce.objects.all()
     serializer_class = SauceSerializer
+
+    @transaction.atomic()
+    def perform_destroy(self, instance):
+        # 현재 지우려는 소스를 사용중인 샌드위치 별로 사용중인 소스 갯수를 구한다.
+        # [{id: 1, s_count: 2}...]
+        use_sandwich = Sandwich.objects.filter(sauce__in=[instance.id])
+        use_annotate = (
+            Sandwich.objects.filter(id__in=use_sandwich)  # 이렇게 해야 annotate가 제대로 된다 ㅎ
+            .values("id")
+            .annotate(s_count=Count("topping"))
+        )
+
+        # 소스가 1개뿐인 샌드위치 갯수
+        use_count = use_annotate.filter(s_count__lte=1)
+
+        if use_count.count() > 0:
+            # 샌드위치 ID. annotate로 가져왔으므로 dict다
+            sandwich_id = ", ".join([str(obj["id"]) for obj in use_annotate])
+            raise serializers.ValidationError(
+                f"샌드위치에 하나뿐인 치즈는 삭제할 수 없습니다. 샌드위치 ID: {sandwich_id}"
+            )
+
+        # 샌드위치 가격 업데이트
+        use_sandwich.update(price=F("price") - instance.price)
+
+        # 삭제
+        instance.delete()
 
 
 class SandwichFilter(dj_filters.FilterSet):
@@ -93,6 +185,9 @@ class SandwichViewSet(viewsets.ModelViewSet):
         instance.topping.update(stock=F("stock") - 1)
         instance.cheese.update(stock=F("stock") - 1)
         instance.sauce.update(stock=F("stock") - 1)
+
+    def perform_update(self, serializer):
+        serializer.save()
 
     @transaction.atomic()
     def perform_destroy(self, instance):
