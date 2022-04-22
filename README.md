@@ -55,6 +55,8 @@ sandwich> python manage.py runserver --settings=config.settings.developement
 ```
 
 ### API URL
+djangorestframework BrowsableAPIRenderer를 이용해 테스트 가능
+
 1. localhost:8000/api/
 2. localhost:8000/api/bread/
 3. localhost:8000/api/topping/
