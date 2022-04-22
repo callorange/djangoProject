@@ -50,7 +50,7 @@ class SandwichViewSet(viewsets.ModelViewSet):
 
     def get_serializer_class(self):
         """request.method 에 따라서 다른 serializer를 반환한다"""
-        if self.request.method == "POST":
+        if self.request.method in ["POST", "PUT", "PATCH"]:
             return SandwichSerializer
         return self.serializer_class
 
