@@ -1,4 +1,4 @@
-__all__ = ["Bread", "Topping", "Cheese", "Sauce"]
+__all__ = ["Bread", "Topping", "Cheese", "Sauce", "Sandwich"]
 
 from django.core.validators import MinValueValidator
 from django.db import models
@@ -28,6 +28,7 @@ class Ingredient(models.Model):
 
     class Meta:
         abstract = True
+        ordering = ['-id']
 
     def __str__(self):
         return self.name
